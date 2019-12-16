@@ -44,7 +44,11 @@
               <section class="login_message">
                 <input type="text" maxlength="11" placeholder="验证码" 
                 v-model="captcha" name="captcha" v-validate="{required: true,regex: /^[0-9a-zA-Z]{4}$/}">
-                <img class="get_verification" src="../images/captcha.svg" alt="captcha">
+                <!-- 当前发送是一个跨域的http请求(不是ajax请求), 没有跨域的问题 -->
+                <img class="get_verification" src="http://localhost:4000/captcha" 
+                  alt="captcha" @click="updateCaptcha" ref="captcha">
+                <!-- 原本404, 利用代理服务器转发请求4000的后台接口 -->
+                <!-- <img class="get_verification" src="/api/captcha" alt="captcha"> -->
                 <span style="color: red;" v-show="errors.has('captcha')">{{ errors.first('captcha') }}</span>
               </section>
             </section>
@@ -56,6 +60,7 @@
       <a href="javascript:" class="go_back" @click="$router.back()">
         <i class="iconfont icon-jiantou2"></i>
       </a>
+      <button>切换语言</button>
     </div>
   </section>
   
@@ -76,7 +81,6 @@
         isShowPwd: false, // 密码是否可见
       }
     },
-
     computed: {
       // 是否是一个正确的手机号
       isRightPhone () {
@@ -85,6 +89,7 @@
     },
 
     methods: {
+      //发送验证码
       sendCode () {
         this.computeTime = 10
         const timer = setInterval(() => {
@@ -105,6 +110,9 @@
         if(success){
           alert('login')
         }
+      },
+      updateCaptcha(){
+        this.$refs.captcha.src = 'http://localhost:4000/captcha?time=' + Date.now()
       }
     }
   }
