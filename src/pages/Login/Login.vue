@@ -4,56 +4,103 @@
       <div class="login_header">
         <h2 class="login_logo">硅谷外卖</h2>
         <div class="login_header_title">
-          <a href="javascript:;" class="on">短信登录</a>
-          <a href="javascript:;">密码登录</a>
+          <a href="javascript:;" :class="{on: isShowSms}" @click="isShowSms=true">短信登录</a>
+          <a href="javascript:;" :class="{on: !isShowSms}" @click="isShowSms=false">密码登录</a>
         </div>
       </div>
       <div class="login_content">
         <form>
-          <div class="on">
+          <div :class="{on: isShowSms}">
             <section class="login_message">
-              <input type="tel" maxlength="11" placeholder="手机号">
-              <button disabled="disabled" class="get_verification">获取验证码</button>
+              <input type="tel" maxlength="11" placeholder="手机号" v-model="phone" name="phone" v-validate="'required|mobile'">
+              <button :disabled="!isRightPhone" class="get_verification" 
+              :class="{right_phone_number: isRightPhone}" @click.prevent="sendCode">获取验证码</button>
+              <span style="color: red;" v-show="errors.has('phone')">{{ errors.first('phone') }}</span>
             </section>
+            
             <section class="login_verification">
-              <input type="tel" maxlength="8" placeholder="验证码">
+              <input type="tel" maxlength="8" placeholder="验证码" v-model="code" name="code" v-validate="'required'">
             </section>
+            <span style="color: red;" v-show="errors.has('code')">{{ errors.first('code') }}</span>
             <section class="login_hint">
               温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
               <a href="javascript:;">《用户服务协议》</a>
             </section>
           </div>
-          <div>
+          <div :class="{on: !isShowSms}">
             <section>
               <section class="login_message">
-                <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
+                <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名"  v-model="name" name="name" v-validate="'required'">
+                <span style="color: red;" v-show="errors.has('name')">{{ errors.first('name') }}</span>
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="8" placeholder="密码">
-                <div class="switch_button off">
-                  <div class="switch_circle"></div>
-                  <span class="switch_text">...</span>
+                <input :type="isShowPwd ? 'text' : 'password'" maxlength="8" placeholder="密码" v-model="pwd" name="pwd" v-validate="'required'">
+                <div class="switch_button" :class="isShowPwd ? 'on' : 'off'" @click="isShowPwd = !isShowPwd">
+                  <div class="switch_circle" :class="{right: isShowPwd}"></div>
+                  <span class="switch_text">{{isShowPwd ? 'abc' : ''}}</span>
                 </div>
+                <span style="color: red;" v-show="errors.has('pwd')">{{ errors.first('pwd') }}</span>
               </section>
               <section class="login_message">
-                <input type="text" maxlength="11" placeholder="验证码">
+                <input type="text" maxlength="11" placeholder="验证码" 
+                v-model="captcha" name="captcha" v-validate="{required: true,regex: /^[0-9a-zA-Z]{4}$/}">
                 <img class="get_verification" src="../images/captcha.svg" alt="captcha">
+                <span style="color: red;" v-show="errors.has('captcha')">{{ errors.first('captcha') }}</span>
               </section>
             </section>
           </div>
-          <button class="login_submit">登录</button>
+          <button class="login_submit" @click="login">登录</button>
         </form>
         <a href="javascript:;" class="about_us">关于我们</a>
       </div>
-      <a href="javascript:" class="go_back">
+      <a href="javascript:" class="go_back" @click="$router.back()">
         <i class="iconfont icon-jiantou2"></i>
       </a>
     </div>
   </section>
+  
 </template>
 
 <script type="text/ecmascript-6">
   export default {
+    name: 'Login',
+    data () {
+      return {
+        isShowSms: true, // true: 显示短信登陆界面,  false: 显示密码登陆界面
+        phone: '', // 手机号
+        code: '', // 短信验证码
+        name: '', // 用户名
+        pwd: '', // 密码
+        captcha: '', // 图形验证码
+        computeTime: 0, // 计时剩余时间
+        isShowPwd: false, // 密码是否可见
+      }
+    },
+
+    computed: {
+      // 是否是一个正确的手机号
+      isRightPhone () {
+        return /^1\d{10}$/.test(this.phone)
+      }
+    },
+
+    methods: {
+      sendCode () {
+        alert('----')
+      },
+      async login(){
+        let names
+        if(this.isShowSms){
+          names = ['phone','code']
+        }else{
+          names = ['name','pwd','captcha']
+        }
+        const success = await this.$validator.validateAll(names) // 对指定的所有表单项进行验证
+        if(success){
+          alert('login')
+        }
+      }
+    }
   }
 </script>
 
@@ -118,6 +165,8 @@
                   color #ccc
                   font-size 14px
                   background transparent
+                  &.right_phone_number
+                    color black
               .login_verification
                 position relative
                 margin-top 16px
@@ -157,6 +206,8 @@
                     background #fff
                     box-shadow 0 2px 4px 0 rgba(0,0,0,.1)
                     transition transform .3s
+                    &.right
+                      transform translateX(27px)
               .login_hint
                 margin-top 12px
                 color #999
@@ -191,5 +242,5 @@
           >.iconfont
             font-size 20px
             color #999
- 
+      
 </style>

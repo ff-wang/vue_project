@@ -10,8 +10,8 @@
   import {reqAddress} from './api/'
   export default {
     mounted(){
-      console.log('1111')
-      this.$store.dispatch('getAddress')
+      // console.log('1111')
+      
     },
     components: {
       FooterGuide

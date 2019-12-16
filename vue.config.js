@@ -1,22 +1,22 @@
 const path = require('path')
-const px2rem = require('postcss-px2rem')
-// 配置postcs-px2rem
-const postcss = px2rem({
-  remUnit: 37.5   //基准大小 baseSize，需要和rem.js中单位rem值占比一样相同
-})
+const px2rem = require('postcss-px2rem') // postcss的一个插件
 
-module.exports = {
-  runtimeCompiler: true,
-  lintOnSave:false,
+module.exports = { // 只能写vue封装的配置
+
+  // runtimeCompiler: true,
+  lintOnSave: false, // 关闭EsLint的规则
   css: { // 添加postcss配置
     loaderOptions: {
       postcss: {
         plugins: [
-          postcss
+          px2rem({
+            remUnit: 37.5   // 设计稿等分后的rem值   375/10
+          })
         ]
       }
     }
   },
+
   configureWebpack: { // 内部写webpack原生配置
     resolve: {
       extensions: ['.js', '.vue', '.json'], // 可以省略的后缀名
@@ -27,6 +27,7 @@ module.exports = {
       }
     }
   },
+
   devServer: {
     proxy: {
       // 处理以/api开头路径的请求
