@@ -13,8 +13,8 @@
           <div :class="{on: isShowSms}">
             <section class="login_message">
               <input type="tel" maxlength="11" placeholder="手机号" v-model="phone" name="phone" v-validate="'required|mobile'">
-              <button :disabled="!isRightPhone" class="get_verification" 
-              :class="{right_phone_number: isRightPhone}" @click.prevent="sendCode">获取验证码</button>
+              <button :disabled="!isRightPhone||computeTime>0" class="get_verification" 
+              :class="{right_phone_number: isRightPhone}" @click.prevent="sendCode">{{computeTime>0?`短信已发送${computeTime}s`:'发送验证码'}}</button>
               <span style="color: red;" v-show="errors.has('phone')">{{ errors.first('phone') }}</span>
             </section>
             
@@ -70,7 +70,7 @@
         phone: '', // 手机号
         code: '', // 短信验证码
         name: '', // 用户名
-        pwd: '', // 密码
+        pwd: '', 
         captcha: '', // 图形验证码
         computeTime: 0, // 计时剩余时间
         isShowPwd: false, // 密码是否可见
@@ -86,7 +86,13 @@
 
     methods: {
       sendCode () {
-        alert('----')
+        this.computeTime = 10
+        const timer = setInterval(() => {
+          this.computeTime--
+          if (this.computeTime===0) {
+            clearInterval(timer)
+          }
+        }, 1000);
       },
       async login(){
         let names

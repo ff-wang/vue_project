@@ -6,6 +6,7 @@ import 'lib-flexible'
 import router from './router'
 import store from './vuex/store'
 import Header from './commponents/Header/Header.vue'
+import Star from './commponents/star/star.vue'
 
 Vue.config.productionTip = false
 
@@ -24,6 +25,7 @@ VeeValidate.Validator.localize('zh_CN', {
 })
 
 Vue.component('Header',Header)
+Vue.component('Star',Star)
 new Vue({
   render: h => h(App),
   router,
