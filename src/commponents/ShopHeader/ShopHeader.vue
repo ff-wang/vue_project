@@ -1,125 +1,122 @@
 <template>
   <div>
     <div class="shop-header">
-    <nav class="shop-nav"
-         :style="{backgroundImage: `url(${info.bgImg})`}">
-      <a class="back">
-        <i class="iconfont icon-arrow_left"/>
-      </a>
-    </nav>
-    <div class="shop-content">
-      <img :src="info.avatar" class="content-image">
-      <div class="header-content">
-        <h2 class="content-title">
-          <span class="content-tag">
-            <span class="mini-tag">品牌</span>
-          </span>
-          <span class="content-name">{{info.name}}</span>
-          <i class="content-icon"></i>
-        </h2>
-        <div class="shop-message">
-          <span class="shop-message-detail">{{info.score}}</span>
-          <span class="shop-message-detail">月售{{info.sellCount}}单</span>
-          <span class="shop-message-detail">
-            {{info.description}}
-            <span>约{{info.deliveryTime}}分钟</span>
-          </span>
-          <span class="shop-message-detail">距离{{info.distance}}</span>
-        </div>
-        <p class="shop-notice">{{info.bulletin}}</p>
-      </div>
-    </div>
-    <div class="shop-header-discounts" v-if="info.supports">
-      <div class="discounts-left">
-        <div class="activity activity-green">
-          <span class="content-tag">
-            <span class="mini-tag">{{info.supports[0].name}}</span>
-          </span>
-          <span class="activity-content">{{info.supports[0].content}}</span>
-        </div>
-      </div>
-      <div class="discounts-right">
-        {{info.supports.length}}个优惠
-      </div>
-    </div>
-    <div class="shop-brief-modal" style="display: none;">
-      <div class="brief-modal-content">
-        <h2 class="content-title">
-          <span class="content-tag">
-            <span class="mini-tag">品牌</span>
-          </span>
-          <span class="content-name">嘉禾一品（温都水城）</span>
-        </h2>
-        <ul class="brief-modal-msg">
-          <li>
-            <h3>3.5</h3>
-            <p>评分</p>
-          </li>
-          <li>
-            <h3>90单</h3>
-            <p>月售</p>
-          </li>
-          <li>
-            <h3>硅谷专送</h3>
-            <p>约28分钟</p>
-          </li>
-          <li>
-            <h3>4元</h3>
-            <p>配送费用</p>
-          </li>
-          <li>
-            <h3>1000m</h3>
-            <p>距离</p>
-          </li>
-        </ul>
-        <h3 class="brief-modal-title">
-          <span>公告</span></h3>
-          <div class="brief-modal-notice">
-            是以粥为特色的中式营养快餐，自2004年10月18日创立“嘉和一品”品牌至今
+      <nav class="shop-nav"
+          :style="{backgroundImage: `url(${info.bgImg})`}">
+        <a class="back">
+          <i class="iconfont icon-arrow_left"/>
+        </a>
+      </nav>
+      <div class="shop-content" @click="isShowBulletin=true">
+        <img :src="info.avatar" class="content-image">
+        <div class="header-content">
+          <h2 class="content-title">
+            <span class="content-tag">
+              <span class="mini-tag">品牌</span>
+            </span>
+            <span class="content-name">{{info.name}}</span>
+            <i class="content-icon"></i>
+          </h2>
+          <div class="shop-message">
+            <span class="shop-message-detail">{{info.score}}</span>
+            <span class="shop-message-detail">月售{{info.sellCount}}单</span>
+            <span class="shop-message-detail">
+              {{info.description}}
+              <span>约{{info.deliveryTime}}分钟</span>
+            </span>
+            <span class="shop-message-detail">距离{{info.distance}}</span>
           </div>
-        <div class="mask-footer">
-          <span class="iconfont icon-close"></span>
+          <p class="shop-notice">{{info.bulletin}}</p>
         </div>
       </div>
-      <div class="brief-modal-cover"></div>
-    </div>
-    <div class="activity-sheet" style="display: none;">
-      <div class="activity-sheet-content">
-        <h2 class="activity-sheet-title">
-        优惠活动</h2>
-        <ul class="list">
-          <li class="activity-item activity-green">
+      <div class="shop-header-discounts" v-if="info.supports" @click="isShowSupports=true">
+        <div class="discounts-left">
+          <div class="activity" :class="supportClasses[info.supports[0].type]">
             <span class="content-tag">
-              <span class="mini-tag">首单</span>
+              <span class="mini-tag">{{info.supports[0].name}}</span>
             </span>
-            <span class="activity-content">新用户下单立减17元(不与其它活动同享)</span>
-          </li>
-          <li class="activity-item activity-red">
-            <span class="content-tag">
-              <span class="mini-tag">满减</span>
-            </span>
-            <span class="activity-content">满35减19，满65减35</span>
-          </li>
-          <li class="activity-item activity-orange">
-            <span class="content-tag">
-              <span class="mini-tag">特价</span>
-            </span>
-            <span class="activity-content">【立减19.5元】欢乐小食餐</span>
-          </li>
-        </ul>
-        <div class="activity-sheet-close">
-          <span class="iconfont icon-close"></span>
+            <span class="activity-content">{{info.supports[0].content}}</span>
+          </div>
+        </div>
+        <div class="discounts-right">
+          {{info.supports.length}}个优惠
         </div>
       </div>
-      <div class="activity-sheet-cover"></div>
+        <transition name="fade">
+          <div class="shop-brief-modal" v-show="isShowBulletin">
+            <div class="brief-modal-content">
+              <h2 class="content-title">
+                <span class="content-tag">
+                  <span class="mini-tag">品牌</span>
+                </span>
+                <span class="content-name">{{info.name}}</span>
+              </h2>
+              <ul class="brief-modal-msg">
+                <li>
+                  <h3>{{info.rating}}</h3>
+                  <p>评分</p>
+                </li>
+                <li>
+                  <h3>{{info.sellCount}}单</h3>
+                  <p>月售</p>
+                </li>
+                <li>
+                  <h3>硅谷专送</h3>
+                  <p>约{{info.deliveryTime}}分钟</p>
+                </li>
+                <li>
+                  <h3>{{info.deliveryPrice}}元</h3>
+                  <p>配送费用</p>
+                </li>
+                <li>
+                  <h3>{{info.distance}}</h3>
+                  <p>距离</p>
+                </li>
+              </ul>
+              <h3 class="brief-modal-title">
+                <span>公告</span></h3>
+                <div class="brief-modal-notice">{{info.bulletin}}</div>
+              <div class="mask-footer">
+                <span class="iconfont icon-close" @click="isShowBulletin=false"></span>
+              </div>
+            </div>
+            <div class="brief-modal-cover"></div>
+          </div>
+        </transition>
+        <div class="activity-sheet" v-show="isShowSupports">
+          <div class="activity-sheet-content">
+            <h2 class="activity-sheet-title">
+            优惠活动</h2>
+            <ul class="list">
+              <li class="activity-item" :class="supportClasses[support.type]"
+                v-for="(support,index) in info.supports" :key="index"
+              >
+                <span class="content-tag">
+                  <span class="mini-tag">{{support.name}}</span>
+                </span>
+                <span class="activity-content">{{support.content}}</span>
+              </li>
+            </ul>
+            <div class="activity-sheet-close">
+              <span class="iconfont icon-close" @click="isShowSupports=false"></span>
+            </div>
+          </div>
+          <div class="activity-sheet-cover" @click="isShowSupports=false"></div>
+        </div>
     </div>
-  </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import {mapState} from 'vuex'
   export default {
+    data(){
+      return{
+        supportClasses:['activity-green','activity-red','activity-orange'],
+        isShowBulletin:false,
+        isShowSupports:false
+      }
+    },
     computed:{
       ...mapState(['info'])
     }
