@@ -53,20 +53,21 @@
               </section>
             </section>
           </div>
-          <button class="login_submit" @click="login">登录</button>
+          <button class="login_submit" @click.prevent="login">{{$t('login_login')}}</button>
         </form>
-        <a href="javascript:;" class="about_us">关于我们</a>
+        <a href="javascript:;" class="about_us">{{$t("login_aboutUs")}}</a>
       </div>
       <a href="javascript:" class="go_back" @click="$router.back()">
         <i class="iconfont icon-jiantou2"></i>
       </a>
-      <button>切换语言</button>
+      <button @click="toggleLanguage">切换语言</button>
     </div>
   </section>
   
 </template>
 
 <script type="text/ecmascript-6">
+  import {Toast,MessageBox} from 'mint-ui'
   export default {
     name: 'Login',
     data () {
@@ -89,18 +90,29 @@
     },
 
     methods: {
-      //发送验证码
-      sendCode () {
+      async sendCode () {
+        //倒计时
         this.computeTime = 10
         const timer = setInterval(() => {
           this.computeTime--
-          if (this.computeTime===0) {
+          if (this.computeTime<=0) {
+            this.computeTime = 0
             clearInterval(timer)
           }
         }, 1000);
+        //发请求
+        const result = await this.$API.reqSendCode(this.phone)
+        if (result.code===0) {
+          Toast('短信已发送')
+        }else{
+          this.computeTime = 0 //停止定时器
+          MessageBox('提示',result.msg||'发送失败')
+        }
       },
+      //登录
       async login(){
         let names
+        let result
         if(this.isShowSms){
           names = ['phone','code']
         }else{
@@ -108,11 +120,37 @@
         }
         const success = await this.$validator.validateAll(names) // 对指定的所有表单项进行验证
         if(success){
-          alert('login')
+          const {isShowSms,phone,code,name,pwd,captcha} = this
+          if (isShowSms) { //短信登录
+            result = await this.$API.reqSmsLogin({phone,code})
+          }else{
+            result = await this.$API.reqPwdLogin({name,pwd,captcha})
+          }
+          this.updateCaptcha()  //更新验证码
+          this.captcha = ''
+        }
+        //根据请求的结果做不同的处理
+        if (result.code===0) {
+          const user = result.data
+          //将user保存到vuex的state中
+          this.$store.dispatch('saveUser',user)
+          //跳转到个人profile页面
+          this.$router.replace({path:'/profile'})
+        }else{
+          MessageBox('提示',result.msg)
         }
       },
       updateCaptcha(){
         this.$refs.captcha.src = 'http://localhost:4000/captcha?time=' + Date.now()
+      },
+      //切换语言
+      toggleLanguage () {
+        // 根据当前语言得到新的语言
+        const locale = this.$i18n.locale==='en' ? 'zh_CN' : 'en'
+        // 指定新的语言
+        this.$i18n.locale = locale
+        // 将新的语言保存到local
+        localStorage.setItem('locale_key', locale)
       }
     }
   }

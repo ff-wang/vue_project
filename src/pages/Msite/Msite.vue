@@ -38,7 +38,7 @@
         </div>
         <div class="shop_container">
           <ul class="shop_list" v-if="shops.length>0">
-            <li class="shop_li border-1px" v-for="shop in shops" :key="shop.id">
+            <li class="shop_li border-1px" v-for="shop in shops" :key="shop.id" @click="$router.push('/shop')">
               <a>
                 <div class="shop_left">
                   <img class="shop_img" :src="'https://fuss10.elemecdn.com' + shop.image_path">
@@ -110,7 +110,6 @@
     },
     async mounted(){
       this.$store.dispatch('getShops')
-      this.$store.dispatch('getAddress')
       await this.$store.dispatch('getCategorys') //dispatch返回的promise在数据更新且界面更新之后才成功
       
       new Swiper('.swiper-container',{

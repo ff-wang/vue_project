@@ -8,5 +8,28 @@ export default{
   },
   receive_shops(state,shops){
     state.shops = shops
-  }
+  },
+  receive_user(state,{user}){
+    state.user = user
+  },
+  receive_token(state,{token}){
+    state.token = token
+  },
+  reset_token(state){
+    state.token = ''
+  },
+  reset_user(state){
+    state.user = {}
+  },
+  receive_goods(state,{goods}){
+    state.goods = goods
+  },
+  receive_ratings(state,{ratings}){
+    state.ratings = ratings
+  },
+  receive_info(state,{info}){
+    state.info = info
+  },
+  
+
 }

@@ -7,11 +7,14 @@
 
 <script type="text/ecmascript-6">
   import FooterGuide from './commponents/FooterGuide/FooterGuide'
-  import {reqAddress} from './api/'
+  // import {reqAddress} from './api/'
   export default {
     mounted(){
       // console.log('1111')
-      
+      {
+        this.$store.dispatch('getAddress')
+        this.$store.dispatch('autoLogin')
+      }
     },
     components: {
       FooterGuide
