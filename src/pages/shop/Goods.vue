@@ -4,7 +4,7 @@
       <div class="menu-wrapper" ref="left">
         <ul>
           <!-- current -->
-          <li class="menu-item" v-for="(good, index) in goods" :key="good.name" :class="{current: index===currentIndex}">
+          <li class="menu-item" v-for="(good, index) in goods" :key="good.name" :class="{current: index===currentIndex}" @click="clickItem(index)">
             <span class="text bottom-border-1px">
               <img class="icon" :src="good.icon" v-if="good.icon">
               {{good.name}}
@@ -64,20 +64,19 @@
     methods:{
       //初始化滑动
       initScroll(){
-        new BScroll(this.$refs.left,{})
-        const rightScroll = new BScroll(this.$refs.right,{
+        new BScroll(this.$refs.left,{click:true,})
+        this.rightScroll = new BScroll(this.$refs.right,{
+          click:true,
           probeType:1 //非实时/触摸
           // probType:2  //实时 /触摸
           // probType:3  //实时 /触摸 / 惯性 / 编码
         })
         //给右侧列表绑定scroll
-        rightScroll.on('scroll', ({x, y}) => {
-          console.log('scroll', x, y)
+        this.rightScroll.on('scroll', ({x, y}) => {
           this.scrollY = Math.abs(y)
         })
         
-        rightScroll.on('scrollEnd', ({x, y}) => {
-          console.log('scrollEnd', x, y)
+        this.rightScroll.on('scrollEnd', ({x, y}) => {
           this.scrollY = Math.abs(y)
         })
       },
@@ -94,6 +93,11 @@
         // 更新tops数据
         this.tops = tops
         console.log('tops', tops)
+      },
+      clickItem(index){
+        const top = this.tops[index]
+        this.scrollY = scrollY
+        this.rightScroll.scrollTo(0,-top,300)
       }
     },
     watch:{
