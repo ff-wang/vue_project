@@ -84,4 +84,12 @@ export default {
       typeof cb==='function' && cb()
     }
   },
+  updateFoodCount({commit},{isAdd,food}){
+    if (isAdd) {
+      commit('add_food_count',{food})
+    }else{
+      commit('reduce_food_count',{food})
+    }
+  }
+
 }

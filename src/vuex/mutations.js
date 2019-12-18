@@ -1,3 +1,4 @@
+import Vue from 'vue'
 // n个间接更改state的回调函数
 export default{
   receive_address(state,address){
@@ -30,6 +31,17 @@ export default{
   receive_info(state,{info}){
     state.info = info
   },
-  
-
+  add_food_count(state,{food}){
+    if (food.count) {
+      food.count++
+    }else{
+      Vue.set(food,'count',1)
+    }
+  },
+  reduce_food_count(state,{food}){
+    if (food.count>0) {
+      food.count--
+    }
+  }
+    
 }

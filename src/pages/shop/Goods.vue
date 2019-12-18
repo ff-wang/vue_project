@@ -2,7 +2,7 @@
   <div>
     <div class="goods">
       <div class="menu-wrapper" ref="left">
-        <ul>
+        <ul ref="leftUl">
           <!-- current -->
           <li class="menu-item" v-for="(good, index) in goods" :key="good.name" :class="{current: index===currentIndex}" @click="clickItem(index)">
             <span class="text bottom-border-1px">
@@ -32,7 +32,7 @@
                     <span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    CartControl组件
+                    <CartControl :food="food"></CartControl>
                   </div>
                 </div>
               </li>
@@ -58,13 +58,20 @@
       ...mapState(['goods']),
       currentIndex () {
         const {scrollY, tops} = this
-        return tops.findIndex((top, index) => scrollY>=top && scrollY<tops[index+1])
+        const index = tops.findIndex((top, index) => scrollY>=top && scrollY<tops[index+1])
+        if (index!==this.index && this.leftScroll) {
+          this.index = index
+          //让左侧列表滑动到当前位置
+          const li = this.$refs.leftUl.children[index]
+          this.leftScroll.scrollToElement(li,300)
+        }
+        return index
       }
     },
     methods:{
       //初始化滑动
       initScroll(){
-        new BScroll(this.$refs.left,{click:true,})
+        this.leftScroll = new BScroll(this.$refs.left,{click:true,})
         this.rightScroll = new BScroll(this.$refs.right,{
           click:true,
           probeType:1 //非实时/触摸
@@ -98,6 +105,7 @@
         const top = this.tops[index]
         this.scrollY = scrollY
         this.rightScroll.scrollTo(0,-top,300)
+        
       }
     },
     watch:{
