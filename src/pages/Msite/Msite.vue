@@ -103,7 +103,12 @@
   import {mapState} from 'vuex'
   export default {
     computed:{
-      ...mapState(['address','categorys','shops']),
+      // ...mapState(['address','categorys','shops']),
+      ...mapState({
+        address: state => state.msite.address,
+        categorys: state => state.msite.categorys,
+        shops: state => state.msite.shops,
+      }),
       categorysArr(){
         return chunk(this.categorys,8)
       }

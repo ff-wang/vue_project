@@ -14,10 +14,10 @@
       </div>
       <div class="foods-wrapper" ref="right">
         <ul ref="rightUl">
-          <li class="food-list-hook" v-for="(good, index) in goods" :key="index">
+          <li class="food-list-hook" v-for="(good, index) in goods" :key="index" >
             <h1 class="title">{{good.name}}</h1>
             <ul>
-              <li class="food-item bottom-border-1px" v-for="(food, index) in good.foods" :key="index">
+              <li class="food-item bottom-border-1px" v-for="(food, index) in good.foods" :key="index" @click="showFood(food)">
                 <div class="icon">
                   <img width="57" height="57" :src="food.icon">
                 </div>
@@ -41,29 +41,35 @@
         </ul>
       </div>
     </div>
+    <Food :food="food" ref="food"></Food>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import BScroll from "better-scroll";
   import {mapState} from 'vuex'
+  import Food from '@/commponents/Food/Food'
   export default {
     data(){
       return {
         scrollY:0,
-        tops:[]
+        tops:[],
+        food:{}
       }
     },
     computed:{
-      ...mapState(['goods']),
+      ...mapState({
+        goods:state=>state.shop.goods
+      }),
       currentIndex () {
         const {scrollY, tops} = this
         const index = tops.findIndex((top, index) => scrollY>=top && scrollY<tops[index+1])
         if (index!==this.index && this.leftScroll) {
+          // 将新的下标保存起来
           this.index = index
-          //让左侧列表滑动到当前位置
+          // 让左侧列表滑动到当前分类处
           const li = this.$refs.leftUl.children[index]
-          this.leftScroll.scrollToElement(li,300)
+          this.leftScroll.scrollToElement(li, 300)
         }
         return index
       }
@@ -103,19 +109,26 @@
       },
       clickItem(index){
         const top = this.tops[index]
-        this.scrollY = scrollY
+        this.scrollY = top
         this.rightScroll.scrollTo(0,-top,300)
         
+      },
+      showFood(food){
+        this.food = food
+        this.$refs.food.toggleShow()
       }
     },
-    watch:{
-      goods(){
-        this.$nextTick(()=>{
+    watch: {
+      goods () { // goods数据有了
+        this.$nextTick(() => {// 列表数据显示了
           this.initScroll()
           this.initTops()
         })
       }
-    }
+    },
+    components:{
+      Food
+    },
     
   }
 </script>
