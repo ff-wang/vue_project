@@ -5,7 +5,8 @@ export default {
   state: { 
     goods:[],
     ratings:[],
-    info:{}
+    info:{},
+    cartFoods:[]
   },
   mutations: { 
     receive_goods(state,{goods}){
@@ -22,13 +23,19 @@ export default {
         food.count++
       }else{
         Vue.set(food,'count',1)
+        state.cartFoods.push(food)
       }
     },
     reduce_food_count(state,{food}){
       if (food.count>0) {
         food.count--
       }
-    }
+      if (food.count===0) {
+        //如果适量为0，将food从购物车中删除
+        state.cartFoods.splice(state.cartFoods.indexOf(food),1)
+      }
+    },
+
    },
   actions: { 
     async getShopGoods({commit},cb){
@@ -64,5 +71,14 @@ export default {
     }
   
    },
-  getters: {  }
+  getters: { 
+    /* 总数量 */
+    totalCount (state) {
+      return state.cartFoods.reduce((pre, food) => pre + food.count, 0)
+    },
+    /* 总价格 */
+    totalPrice (state) {
+      return state.cartFoods.reduce((pre, food) => pre + food.count*food.price, 0)
+    },
+  }  
 }
