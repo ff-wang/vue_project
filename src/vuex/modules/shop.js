@@ -35,6 +35,10 @@ export default {
         state.cartFoods.splice(state.cartFoods.indexOf(food),1)
       }
     },
+    clear_cart(state){
+      state.cartFoods.forEach(food=>food.count=0)
+      state.cartFoods = [] //重置cartFoods
+    }
 
    },
   actions: { 

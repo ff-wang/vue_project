@@ -19,22 +19,18 @@
       </div>
     </div>
     <transition name="move">
-      <div class="shopcart-list" v-show="isShow">
+      <div class="shopcart-list" v-show="listShow">
         <div class="list-header">
           <h1 class="title">购物车</h1>
-          <span class="empty">清空</span>
+          <span class="empty" @click="clearCart">清空</span>
         </div>
-        <div class="list-content">
+        <div class="list-content" ref="foods">
           <ul>
-            <li class="food">
-              <span class="name">红枣山药糙米粥</span>
-              <div class="price"><span>￥10</span></div>
+            <li class="food" v-for="(food) in cartFoods" :key="food.name">
+              <span class="name">{{food.name}}</span>
+              <div class="price"><span>￥{{food.price}}</span></div>
               <div class="cartcontrol-wrapper">
-                <div class="cartcontrol">
-                  <div class="iconfont icon-remove_circle_outline"></div>
-                  <div class="cart-count">1</div>
-                  <div class="iconfont icon-add_circle"></div>
-                </div>
+                <CartControl :food="food"/>
               </div>
             </li>
           </ul>
@@ -49,6 +45,8 @@
 </template>
 
 <script type="text/ecmascript-6">
+import BScroll from "better-scroll";
+import {MessageBox} from 'mint-ui'
 import { mapState, mapGetters } from 'vuex';
   export default {
     data(){
@@ -77,12 +75,37 @@ import { mapState, mapGetters } from 'vuex';
         }else{
           return '结算'
         }
+      },
+      listShow(){
+        if (this.totalCount===0) {
+          this.isShow = false
+          return false
+        }
+        return this.isShow
       }
     },
     methods:{
       toggleShow(){
-        this.isShow = !this.isShow
+        if (this.totalCount>0) {
+          this.isShow = !this.isShow
+        }
+        if (this.isShow) {
+          this.$nextTick(()=>{
+            if (!this.scroll) {
+              this.scroll = new BScroll(this.$refs.foods,{click:true})
+            }
+          })
+        }else{ //先添加少量商品，无滑动，但之后添加商品，初始无滑动，之后可滑动
+          this.scroll.refresh() //内部重新统计内容高度决定是否形成滑动
+        }
+      },
+      clearCart(){
+        MessageBox.confirm('确认清空购物车嘛？').then(
+          ()=>this.$store.commit('clear_cart'),
+          ()=>{}
+        )
       }
+      
     }
 
   }
