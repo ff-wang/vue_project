@@ -1,4 +1,4 @@
-import MSite from '../pages/MSite/MSite.vue'
+import MSite from '../pages/MSite/Msite.vue'
 import Search from '../pages/Search/Search.vue'
 import Order from '../pages/Order/Order.vue'
 import Profile from '../pages/Profile/Profile.vue'
@@ -33,24 +33,25 @@ export default[
     component: Login,
   },
   {
-    path: '/shop',
+    name:'shop',
+    path: '/shop/:id',
     component: Shop,
     children:[
       {
-        path: '/shop/goods',
+        path: 'goods',
         component: Goods,
       },
       {
-        path: '/shop/ratings',
+        path: 'ratings',
         component: Ratings,
       },
       {
-        path: '/shop/info',
+        path: 'info',
         component: Info,
       },
       {
         path: '',
-        redirect: '/shop/goods'
+        redirect: 'goods'
       }
     ] 
   },
